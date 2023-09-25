@@ -1,0 +1,18 @@
+{
+  "name": "s3-file-uploader",
+  "version": "1.0.0",
+  "description": "Tool to upload local files to a AWS S3 bucket",
+  "main": "entry_points/console/index.js",
+  "scripts": {
+    "upload": "node entry_points/console/index",
+    "server": "node entry_points/api_server/index"
+
+  },
+  "author": "Ismaïl NGUYEN <dev@ismailnguyen.com>",
+  "license": "WTFPL",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.418.0",
+    "@hapi/hapi": "^21.3.2",
+    "dotenv": "^16.3.1"
+  }
+}
