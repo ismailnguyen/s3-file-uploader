@@ -6,7 +6,6 @@
   "scripts": {
     "upload": "node entry_points/console/index",
     "server": "node entry_points/api_server/index"
-
   },
   "author": "Ismaïl NGUYEN <dev@ismailnguyen.com>",
   "license": "WTFPL",
