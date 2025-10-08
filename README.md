@@ -53,7 +53,7 @@ curl -G "http://localhost:3000/upload" \
 
 ## Ignoring Files
 
-Create or edit `.fileignore` in the project root to skip files or directories during uploads. The syntax is similar to `.gitignore` and supports comments (`#`), blank lines, `*` wildcards, and `**` to match across directories.
+Create or edit `.fileignore` in the project root (or inside the folder you upload) to skip files or directories during uploads. The syntax is similar to `.gitignore` and supports comments (`#`), blank lines, `*` wildcards, and `**` to match across directories.
 
 ```txt
 # ignore macOS metadata files

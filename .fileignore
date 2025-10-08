@@ -4,3 +4,9 @@
 # Default ignores
 ._*
 .DS_Store
+.device_info_*
+$RECYCLE.BIN/
+.Trashes
+.Spotlight*
+.fseventsd/
+desktop.ini

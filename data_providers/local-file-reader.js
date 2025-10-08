@@ -2,20 +2,33 @@ const fs = require('fs');
 const path = require('path');
 
 const DEFAULT_IGNORE_FILE = '.fileignore';
+const PATH_SEPARATOR_REGEX = /[\\/]+/g;
 
 class LocalFileReader {
     constructor (folderToRead, options = {}) {
         this.folderToRead = path.resolve(folderToRead);
-        this.ignoreRules = this._loadIgnoreRules(options.ignoreConfigPath);
+        this.ignoreRules = this._initializeIgnoreRules(options);
     }
 
-    async readFile (filePath) {
-        try {
-            return await fs.promises.readFile(filePath);
-        } catch (error) {
-            console.error(`Failed to read ${filePath}: ${error.message}`);
-            throw error;
-        }
+    readFile (filePath) {
+        return new Promise((resolve, reject) => {
+            const stream = fs.createReadStream(filePath);
+
+            const handleError = (error) => {
+                console.error(`Failed to read ${filePath}: ${error.message}`);
+                stream.destroy();
+                reject(error);
+            };
+
+            stream.once('error', handleError);
+            stream.once('open', () => {
+                stream.off('error', handleError);
+                stream.on('error', (error) => {
+                    console.error(`Stream error for ${filePath}: ${error.message}`);
+                });
+                resolve(stream);
+            });
+        });
     }
 
     getFiles (dir, files = []) {
@@ -58,10 +71,34 @@ class LocalFileReader {
         return this.folderToRead;
     }
 
-    _loadIgnoreRules (ignoreConfigPath) {
-        const configPath = ignoreConfigPath
-            ? path.resolve(ignoreConfigPath)
-            : path.resolve(process.cwd(), DEFAULT_IGNORE_FILE);
+    _initializeIgnoreRules (options) {
+        const candidatePaths = [];
+
+        if (options.ignoreConfigPath) {
+            candidatePaths.push(path.resolve(options.ignoreConfigPath));
+        }
+
+        candidatePaths.push(path.join(this.folderToRead, DEFAULT_IGNORE_FILE));
+        candidatePaths.push(path.resolve(process.cwd(), DEFAULT_IGNORE_FILE));
+
+        const compiled = [];
+        const seen = new Set();
+
+        for (const configPath of candidatePaths) {
+            if (seen.has(configPath)) {
+                continue;
+            }
+            seen.add(configPath);
+            compiled.push(...this._loadIgnoreRules(configPath));
+        }
+
+        return compiled;
+    }
+
+    _loadIgnoreRules (configPath) {
+        if (!configPath) {
+            return [];
+        }
 
         let patterns = [];
         try {
@@ -71,9 +108,15 @@ class LocalFileReader {
                 .map(line => line.trim())
                 .filter(line => line && !line.startsWith('#'));
         } catch (error) {
-            if (error.code !== 'ENOENT') {
-                console.warn(`Failed to read ignore file at ${configPath}: ${error.message}`);
+            if (error.code === 'ENOENT') {
+                return [];
             }
+            if (error.code === 'EISDIR') {
+                console.warn(`${configPath} is a directory. Skipping ignore configuration.`);
+                return [];
+            }
+            console.warn(`Failed to read ignore file at ${configPath}: ${error.message}`);
+            return [];
         }
 
         return patterns.map(pattern => this._compilePattern(pattern));
@@ -118,7 +161,7 @@ class LocalFileReader {
             return false;
         }
 
-        const normalizedPath = relativePath.split(path.sep).join('/');
+        const normalizedPath = relativePath.replace(PATH_SEPARATOR_REGEX, '/');
 
         return this.ignoreRules.some(rule => {
             if (rule.directoryOnly && !isDirectory) {
