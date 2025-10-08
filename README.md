@@ -32,6 +32,7 @@ npm run upload "<PUT HERE THE FOLDER PATH TO UPLOAD>" "[OPTIONAL TARGET PREFIX]"
 npm run upload /Users/ishmaael/Downloads/Photos backups/2024
 ```
 > If you omit the target prefix, files are uploaded to the root of your bucket while preserving their relative folder structure.
+> The CLI reports each file as it uploads, so you can track the current file and overall progress.
 
 
 ### API
