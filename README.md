@@ -29,7 +29,7 @@ npm run upload "<PUT HERE THE FOLDER PATH TO UPLOAD>"
 
 #### Example
 ```bash
-npm run review /Users/ishmaael/Downloads/Photos
+npm run upload /Users/ishmaael/Downloads/Photos
 ```
 
 
