@@ -50,3 +50,17 @@ curl -G "http://localhost:3000/upload" \
     --data-urlencode "targetPrefix=backups/2024"
  
 ```
+
+## Ignoring Files
+
+Create or edit `.fileignore` in the project root to skip files or directories during uploads. The syntax is similar to `.gitignore` and supports comments (`#`), blank lines, `*` wildcards, and `**` to match across directories.
+
+```txt
+# ignore macOS metadata files
+._*
+.DS_Store
+# ignore entire folders
+cache/
+```
+
+Patterns are matched against the file paths relative to the folder you upload. Update this list to exclude any sensitive or unnecessary files from your S3 bucket.
