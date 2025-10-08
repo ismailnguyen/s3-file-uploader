@@ -6,16 +6,13 @@ class LocalFileReader {
         this.folderToRead = folderToRead;
     }
 
-    readFile (filePath, callback) {
-        const readableStream = fs.createReadStream(filePath);
-    
-        readableStream.on('error', function (error) {
-            console.log(`error: ${error.message}`);
-        })
-    
-        readableStream.on('data', (chunk) => {
-            callback(chunk);
-        })
+    async readFile (filePath) {
+        try {
+            return await fs.promises.readFile(filePath);
+        } catch (error) {
+            console.error(`Failed to read ${filePath}: ${error.message}`);
+            throw error;
+        }
     }
 
     getFiles (dir, files = []) {

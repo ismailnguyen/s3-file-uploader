@@ -8,11 +8,12 @@ class FileUploader {
     }
 
     async upload () {
-        this.fileReader.getFiles().forEach(filePath => { 
-            this.fileReader.readFile(filePath, fileContent => {
-                this.fileUploader.upload(filePath, fileContent);
-            });
-        });
+        const filePaths = this.fileReader.getFiles();
+
+        for (const filePath of filePaths) {
+            const fileContent = await this.fileReader.readFile(filePath);
+            await this.fileUploader.upload(filePath, fileContent);
+        }
     }
 }
 
