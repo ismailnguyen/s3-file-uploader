@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 class LocalFileReader {
     constructor (folderToRead) {
@@ -23,11 +24,21 @@ class LocalFileReader {
             dir = this.folderToRead;
         }
 
-        const fileList = fs.readdirSync(dir);
+        let fileList;
+        try {
+            fileList = fs.readdirSync(dir, { withFileTypes: true });
+        } catch (error) {
+            if (error.code === 'EPERM' || error.code === 'EACCES') {
+                // Skip directories that the process cannot read due to permissions.
+                console.warn(`Skipping directory ${dir}: ${error.message}`);
+                return files;
+            }
+            throw error;
+        }
 
-        for (const file of fileList) {
-          const name = `${dir}/${file}`;
-          if (fs.statSync(name).isDirectory()) {
+        for (const entry of fileList) {
+          const name = path.join(dir, entry.name);
+          if (entry.isDirectory()) {
             this.getFiles(name, files);
           } else {
             files.push(name);
