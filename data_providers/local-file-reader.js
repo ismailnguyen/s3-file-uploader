@@ -28,7 +28,7 @@ class LocalFileReader {
         for (const file of fileList) {
           const name = `${dir}/${file}`;
           if (fs.statSync(name).isDirectory()) {
-            getFiles(name, files);
+            this.getFiles(name, files);
           } else {
             files.push(name);
           }
