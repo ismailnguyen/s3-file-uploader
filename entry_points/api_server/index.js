@@ -14,7 +14,7 @@ const init = async () => {
         method: 'GET',
         path: '/upload',
         handler: (request, h) => {
-            return uploadController.upload(request.query.folderToArchive);
+            return uploadController.upload(request.query.folderToArchive, request.query.targetPrefix);
         }
     });
 

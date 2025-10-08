@@ -11,6 +11,7 @@ const main = async () => {
         console.error('Please provide a folder name.');
         process.exit(1);
     }
+    const targetPrefix = process.argv[3] || '';
     const localFileReader = new LocalFileReader(folderToArchive);
 
     const s3FileUploader = new S3FileUploader(
@@ -20,7 +21,7 @@ const main = async () => {
         process.env.AWS_SECRET_ACCESS_KEY
     );
 
-    const fileUploader = new FileUploader(localFileReader, s3FileUploader);
+    const fileUploader = new FileUploader(localFileReader, s3FileUploader, targetPrefix);
 
     await fileUploader.upload();
 }

@@ -24,13 +24,14 @@ AWS_SECRET_ACCESS_KEY=<PUT HERE YOUR AWS ACCESS KEY SECRET>
 ### Console
 Run the following command in terminal:
 ```bash
-npm run upload "<PUT HERE THE FOLDER PATH TO UPLOAD>"
+npm run upload "<PUT HERE THE FOLDER PATH TO UPLOAD>" "[OPTIONAL TARGET PREFIX]"
 ```
 
 #### Example
 ```bash
-npm run upload /Users/ishmaael/Downloads/Photos
+npm run upload /Users/ishmaael/Downloads/Photos backups/2024
 ```
+> If you omit the target prefix, files are uploaded to the root of your bucket while preserving their relative folder structure.
 
 
 ### API
@@ -39,10 +40,12 @@ Run the following command in terminal:
 npm run server
 ```
 
-Make a `HTTP GET` call to the running localhost server to `/upload` endpoint with `` query string parameter.
+Make a `HTTP GET` call to the running localhost server to `/upload` endpoint with `folderToArchive` and optional `targetPrefix` query string parameters.
 
 #### Example
 ```bash
-curl -X GET "http://localhost:3000/upload?folderToArchive=/Users/ishmaael/Downloads/Photos"
+curl -G "http://localhost:3000/upload" \
+    --data-urlencode "folderToArchive=/Users/ishmaael/Downloads/Photos" \
+    --data-urlencode "targetPrefix=backups/2024"
  
 ```

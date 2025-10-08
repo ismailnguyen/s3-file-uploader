@@ -4,7 +4,7 @@ const LocalFileReader = require('../../../data_providers/local-file-reader').Loc
 const S3FileUploader = require('../../../data_providers/aws-s3-uploader').S3FileUploader;
 const FileUploader = require('../../../core/file-uploader').FileUploader;
 
-const upload = async (folderToArchive) => {
+const upload = async (folderToArchive, targetPrefix = '') => {
     if (!folderToArchive) {
         console.error('Please provide a folder name.');
         return;
@@ -19,11 +19,12 @@ const upload = async (folderToArchive) => {
 
     const localFileReader = new LocalFileReader(folderToArchive);
 
-    const fileUploader = new FileUploader(localFileReader, s3FileUploader);
+    const fileUploader = new FileUploader(localFileReader, s3FileUploader, targetPrefix);
 
     await fileUploader.upload();
 
-    return `Folder ${ request.query.folderToArchive } was uploaded to bucket ${ process.env.AWS_BUCKET_NAME }!`;
+    const destination = targetPrefix ? `${ targetPrefix }` : 'root';
+    return `Folder ${ folderToArchive } was uploaded to bucket ${ process.env.AWS_BUCKET_NAME } under ${ destination }`;
 }
 
 module.exports = {

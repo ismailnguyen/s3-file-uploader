@@ -43,6 +43,10 @@ class LocalFileReader {
         }
         return files;
     }
+
+    getBasePath () {
+        return this.folderToRead;
+    }
 }
 
 module.exports = {
