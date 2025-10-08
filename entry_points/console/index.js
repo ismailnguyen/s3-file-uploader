@@ -3,6 +3,7 @@ require('dotenv').config();
 const LocalFileReader = require('../../data_providers/local-file-reader').LocalFileReader;
 const S3FileUploader = require('../../data_providers/aws-s3-uploader').S3FileUploader;
 const FileUploader = require('../../core/file-uploader').FileUploader;
+const UploadTracker = require('../../core/upload-tracker').UploadTracker;
 
 const main = async () => {
     // read folder to archive from user's input
@@ -12,6 +13,7 @@ const main = async () => {
         process.exit(1);
     }
     const targetPrefix = process.argv[3] || '';
+    const uploadLogPathInput = process.argv[4] || process.env.UPLOAD_LOG_PATH || '';
     const localFileReader = new LocalFileReader(folderToArchive);
 
     const s3FileUploader = new S3FileUploader(
@@ -21,7 +23,10 @@ const main = async () => {
         process.env.AWS_SECRET_ACCESS_KEY
     );
 
-    const fileUploader = new FileUploader(localFileReader, s3FileUploader, targetPrefix);
+    const uploadTracker = new UploadTracker(uploadLogPathInput);
+    console.log(`Tracking uploaded files in ${uploadTracker.getLogPath()}.`);
+
+    const fileUploader = new FileUploader(localFileReader, s3FileUploader, targetPrefix, uploadTracker);
 
     await fileUploader.upload();
 }

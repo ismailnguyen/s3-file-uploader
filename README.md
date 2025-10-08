@@ -24,15 +24,16 @@ AWS_SECRET_ACCESS_KEY=<PUT HERE YOUR AWS ACCESS KEY SECRET>
 ### Console
 Run the following command in terminal:
 ```bash
-npm run upload "<PUT HERE THE FOLDER PATH TO UPLOAD>" "[OPTIONAL TARGET PREFIX]"
+npm run upload "<PUT HERE THE FOLDER PATH TO UPLOAD>" "[OPTIONAL TARGET PREFIX]" "[OPTIONAL UPLOAD LOG PATH]"
 ```
 
 #### Example
 ```bash
-npm run upload /Users/ishmaael/Downloads/Photos backups/2024
+npm run upload /Users/ishmaael/Downloads/Photos backups/2024 .upload-log
 ```
 > If you omit the target prefix, files are uploaded to the root of your bucket while preserving their relative folder structure.
 > The CLI reports each file as it uploads, so you can track the current file and overall progress.
+> Uploaded files are tracked in `.upload-log` by default. Pass a custom path as the third argument or set `UPLOAD_LOG_PATH` to override it.
 
 
 ### API
@@ -41,15 +42,20 @@ Run the following command in terminal:
 npm run server
 ```
 
-Make a `HTTP GET` call to the running localhost server to `/upload` endpoint with `folderToArchive` and optional `targetPrefix` query string parameters.
+Make a `HTTP GET` call to the running localhost server to `/upload` endpoint with `folderToArchive` and optional `targetPrefix` and `logPath` query string parameters.
 
 #### Example
 ```bash
 curl -G "http://localhost:3000/upload" \
     --data-urlencode "folderToArchive=/Users/ishmaael/Downloads/Photos" \
-    --data-urlencode "targetPrefix=backups/2024"
+    --data-urlencode "targetPrefix=backups/2024" \
+    --data-urlencode "logPath=.upload-log"
  
 ```
+
+## Resuming Uploads
+
+Every successful upload is logged so reruns only send missing files. Delete the log file (default: `.upload-log`) when you want to force a full re-upload. You can change the log location by passing a third argument to the CLI, providing a `logPath` query parameter to the API, or setting the `UPLOAD_LOG_PATH` environment variable.
 
 ## Ignoring Files
 
